@@ -2,6 +2,10 @@
   "name": "MediasiK3",
   "version": "0.0.1",
   "private": true,
+  "author": {
+    "name": "Industri Anak Muda Indionesia",
+    "email": "hi@iamindonesia.cloud"
+  },
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
@@ -10,8 +14,28 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-community/datetimepicker": "^8.4.1",
+    "@react-navigation/bottom-tabs": "^7.3.14",
+    "@react-navigation/native": "^7.1.10",
+    "@react-navigation/native-stack": "^7.3.14",
+    "@reduxjs/toolkit": "^2.8.2",
+    "axios": "^1.9.0",
     "react": "19.0.0",
-    "react-native": "0.79.3"
+    "react-native": "0.79.3",
+    "react-native-collapsible": "^1.6.2",
+    "react-native-element-dropdown": "^2.12.4",
+    "react-native-geolocation-service": "^5.3.1",
+    "react-native-gesture-handler": "^2.25.0",
+    "react-native-image-picker": "^8.2.1",
+    "react-native-modal-datetime-picker": "^18.0.0",
+    "react-native-paper": "^5.14.5",
+    "react-native-permissions": "^5.4.1",
+    "react-native-reanimated": "^3.18.0",
+    "react-native-safe-area-context": "^5.4.1",
+    "react-native-screens": "^4.11.1",
+    "react-native-vector-icons": "^10.2.0",
+    "react-native-video": "^6.14.1",
+    "react-redux": "^9.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
