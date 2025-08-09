@@ -1,13 +1,14 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator } from '@react-navigation/native-stack'; // Stack navigator
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { View, Text, Platform, Dimensions } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import HomeScreen from '../screens/HomeScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 import AbsensiScreen from '../screens/AbsensiScreen';
 import VideoScreen from '../screens/VideoScreen';
 import LaporanScreen from '../screens/LaporanScreen';
-import ProfileScreen from '../screens/ProfileScreen';
 import VideoShowScreen from '../screens/VideoShowScreen'; 
 import RegulasiScreen from '../screens/RegulasiScreen';
 import ForumScreen from '../screens/ForumScreen';
@@ -16,123 +17,222 @@ import QuizScreen from '../screens/QuizScreen';
 import QuizDetailScreen from '../screens/QuizDetailScreen';
 import InformationScreen from '../screens/InformationScreen';
 import InformationDetailScreen from '../screens/InformationDetailScreen';
+import BriefingScreen from '../screens/BriefingScreen';
 
-
+const { width } = Dimensions.get('window');
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
+
+// Custom Tab Bar Label Component
+const TabLabel = ({ focused, title }) => (
+  <Text style={{
+    fontSize: 12,
+    fontWeight: focused ? '600' : '500',
+    color: focused ? '#667eea' : '#94a3b8',
+    marginTop: 4,
+    textAlign: 'center',
+  }}>
+    {title}
+  </Text>
+);
+
+// Custom Tab Icon Component
+const TabIcon = ({ focused, iconName, size = 24 }) => (
+  <View style={{
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: focused ? 'rgba(102, 126, 234, 0.15)' : 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 2,
+  }}>
+    <Icon 
+      name={iconName} 
+      size={size} 
+      color={focused ? '#667eea' : '#94a3b8'} 
+    />
+  </View>
+);
 
 function BottomTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarIcon: ({ color, size }) => {
+        tabBarIcon: ({ focused, size }) => {
           let iconName;
-          if (route.name === 'Home') iconName = 'home';
-          else if (route.name === 'Absensi') iconName = 'check-circle';
-        //   else if (route.name === 'Video') iconName = 'play-circle';
-        //   else if (route.name === 'Laporan') iconName = 'file-document';
-          else if (route.name === 'Profile') iconName = 'account';
+          
+          switch (route.name) {
+            case 'Home':
+              iconName = 'home';
+              break;
+            case 'Profile':
+              iconName = 'person';
+              break;
+            default:
+              iconName = 'home';
+          }
 
-          return <Icon name={iconName} size={size} color={color} />;
+          return <TabIcon focused={focused} iconName={iconName} size={size} />;
         },
-        tabBarActiveTintColor: '#2E7D32',
-        tabBarInactiveTintColor: 'gray',
-        headerShown: true,
+        tabBarLabel: ({ focused }) => {
+          let title;
+          
+          switch (route.name) {
+            case 'Home':
+              title = 'Beranda';
+              break;
+            case 'Profile':
+              title = 'Profil';
+              break;
+            default:
+              title = route.name;
+          }
+
+          return <TabLabel focused={focused} title={title} />;
+        },
+        tabBarStyle: {
+          height: Platform.OS === 'ios' ? 90 : 70,
+          // paddingTop: 10,
+          paddingBottom: Platform.OS === 'ios' ? 28 : 12,
+          paddingHorizontal: 20,
+          backgroundColor: '#ffffff',
+          borderTopWidth: 1,
+          borderTopColor: '#f1f5f9',
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: -2,
+          },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+        },
+        tabBarItemStyle: {
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingVertical: 8,
+          borderRadius: 16,
+          marginHorizontal: 8,
+        },
+        tabBarActiveTintColor: '#667eea',
+        tabBarInactiveTintColor: '#94a3b8',
+        headerShown: false,
+        tabBarHideOnKeyboard: true,
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} options={{
-        gestureEnabled: true,
-        headerShadowVisible: false,
-        headerBackVisible: false,
-        headerShown: false,
-      }} />
-      <Tab.Screen name="Absensi" component={AbsensiScreen} />
-      {/* <Tab.Screen name="Video" component={VideoScreen} /> */}
-      {/* <Tab.Screen name="Laporan" component={LaporanScreen} /> */}
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen 
+        name="Home" 
+        component={HomeScreen}
+        options={{
+          tabBarAccessibilityLabel: 'Beranda',
+        }}
+      />
+      <Tab.Screen 
+        name="Profile" 
+        component={ProfileScreen}
+        options={{
+          tabBarAccessibilityLabel: 'Profil Pengguna',
+        }}
+      />
     </Tab.Navigator>
   );
 }
 
 export default function MainNavigator() {
   return (
-    <Stack.Navigator>
-      {/* Bottom Tabs sebagai screen utama */}
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: '#667eea',
+          elevation: 0,
+          shadowOpacity: 0,
+          borderBottomWidth: 0,
+        },
+        headerTintColor: '#ffffff',
+        headerTitleStyle: {
+          fontWeight: '600',
+          fontSize: 18,
+        },
+        headerTitleAlign: 'center',
+        headerBackTitleVisible: false,
+        gestureEnabled: true,
+        animation: 'slide_from_right',
+      }}
+    >
+      {/* Bottom Tabs as Main Screen */}
       <Stack.Screen
         name="MainTabs"
         component={BottomTabs}
         options={{ headerShown: false }}
       />
 
-      {/* Modal Screen */}
+      {/* Video & Education Screens */}
+      <Stack.Screen
+        name="Video"
+        component={VideoScreen}
+        options={{
+          title: 'KENALAN YUK!',
+          headerRight: () => (
+            <View style={{ marginRight: 4 }}>
+              <Icon name="school" size={24} color="#ffffff" />
+            </View>
+          ),
+        }}
+      />
+      
       <Stack.Screen
         name="VideoShow"
         component={VideoShowScreen}
         options={{
-          presentation: 'modal', // modal style (slide up)
-          headerShown: true,    // header bisa disesuaikan
-        }}
-      />
-       <Stack.Screen
-        name="InformationDetail"
-        component={InformationDetailScreen}
-        options={{
-          presentation: 'modal', // modal style (slide up)
-          headerShown: true,    // header bisa disesuaikan
+          presentation: 'modal',
+          title: 'Video Edukasi',
+          headerStyle: {
+            backgroundColor: '#1a202c',
+          },
         }}
       />
 
-      
-       <Stack.Screen
-        name="Video"
-        component={VideoScreen}
-        options={{
-          headerShown: true, 
-          title: 'Kenalan Yuk', // Judul header
-          headerTitleAlign: 'center', // Judul di tengah
-          headerStyle: { backgroundColor: '#2E7D32' }, // Warna latar belakang header
-          headerTintColor: '#fff', // Warna teks header
-          headerRight: () => (
-            <Icon name="account-multiple-check" size={24} color="#fff" style={{ marginRight: 10 }} />
-          ), // Ikon di kanan header   
-        }}
-      />
-       <Stack.Screen
+      {/* Regulation & Compliance */}
+      <Stack.Screen
         name="Regulasi"
         component={RegulasiScreen}
         options={{
-          headerShown: true, 
-          title: 'Regulasi', // Judul header
-          headerTitleAlign: 'center', // Judul di tengah
-          headerStyle: { backgroundColor: '#2E7D32' }, // Warna latar belakang header
-          headerTintColor: '#fff', // Warna teks header   
+          title: 'REGULASI K3',
+          headerRight: () => (
+            <View style={{ marginRight: 4 }}>
+              <Icon name="gavel" size={24} color="#ffffff" />
+            </View>
+          ),
         }}
       />
-       <Stack.Screen
+
+      {/* Forum & Discussion */}
+      <Stack.Screen
         name="Forum"
         component={ForumScreen}
         options={{
-          headerShown: true,    
-            title: 'Forum', // Judul header
-            headerTitleAlign: 'center', // Judul di tengah
-            headerStyle: { backgroundColor: '#2E7D32' }, // Warna latar belakang header
-            headerTintColor: '#fff', // Warna teks header
-            headerRight: () => (
-              <Icon name="account-star" size={24} color="#fff" style={{ marginRight: 10 }} />
-            ), // Ikon di kanan header
-            
+          title: 'DIALOG FORUM',
+          headerRight: () => (
+            <View style={{ marginRight: 4 }}>
+              <Icon name="forum" size={24} color="#ffffff" />
+            </View>
+          ),
         }}
       />
+
+      {/* Reports & Incidents */}
       <Stack.Screen
         name="Laporan"
         component={LaporanScreen}
         options={{
-          headerShown: true,    
-            title: 'Laporan', // Judul header
-            headerTitleAlign: 'center', // Judul di tengah
-            headerStyle: { backgroundColor: '#2E7D32' }, // Warna latar belakang header
-            headerTintColor: '#fff', // Warna teks header
-           
+          title: 'RIWAYAT LAPORAN',
+          headerRight: () => (
+            <View style={{ marginRight: 4 }}>
+              <Icon name="history" size={24} color="#ffffff" />
+            </View>
+          ),
         }}
       />
 
@@ -140,56 +240,98 @@ export default function MainNavigator() {
         name="TambahLaporan"
         component={TambahLaporanScreen}
         options={{
-          headerShown: true,    
-            title: 'Detail Laporan ', // Judul header
-            headerTitleAlign: 'center', // Judul di tengah
-            headerStyle: { backgroundColor: '#2E7D32' }, // Warna latar belakang header
-            headerTintColor: '#fff', // Warna teks header
-            
-            
+          title: 'LAPOR SEGERA',
+          headerRight: () => (
+            <View style={{ marginRight: 4 }}>
+              <Icon name="report-problem" size={24} color="#ffffff" />
+            </View>
+          ),
         }}
       />
 
-       <Stack.Screen
+      {/* Attendance */}
+      <Stack.Screen
+        name="Absensi"
+        component={AbsensiScreen}
+        options={{
+          title: 'ABSENSI DIGITAL',
+          headerRight: () => (
+            <View style={{ marginRight: 4 }}>
+              <Icon name="fingerprint" size={24} color="#ffffff" />
+            </View>
+          ),
+        }}
+      />
+
+      {/* Quiz & Assessment */}
+      <Stack.Screen
         name="Quiz"
         component={QuizScreen}
         options={{
-          headerShown: true,    
-            title: 'Quiz K3', // Judul header
-            headerTitleAlign: 'center', // Judul di tengah
-            headerStyle: { backgroundColor: '#2E7D32' }, // Warna latar belakang header
-            headerTintColor: '#fff', // Warna teks header
-            
-            
+          title: 'QUIZ K3',
+          headerRight: () => (
+            <View style={{ marginRight: 4 }}>
+              <Icon name="quiz" size={24} color="#ffffff" />
+            </View>
+          ),
         }}
       />
-       <Stack.Screen
+
+      <Stack.Screen
         name="QuizDetailScreen"
         component={QuizDetailScreen}
         options={{
-          headerShown: true,    
-            title: 'Quiz K3', // Judul header
-            headerTitleAlign: 'center', // Judul di tengah
-            headerStyle: { backgroundColor: '#2E7D32' }, // Warna latar belakang header
-            headerTintColor: '#fff', // Warna teks header
-            
-            
+          title: 'QUIZ DETAIL',
+          headerStyle: {
+            backgroundColor: '#f59e0b',
+          },
+          headerRight: () => (
+            <View style={{ marginRight: 4 }}>
+              <Icon name="assignment" size={24} color="#ffffff" />
+            </View>
+          ),
         }}
       />
-       <Stack.Screen
+
+      {/* Information */}
+      <Stack.Screen
         name="Informasi"
         component={InformationScreen}
         options={{
-          headerShown: true,    
-            title: 'Informasi', // Judul header
-            headerTitleAlign: 'center', // Judul di tengah
-            headerStyle: { backgroundColor: '#2E7D32' }, // Warna latar belakang header
-            headerTintColor: '#fff', // Warna teks header
-            
-            
+          title: 'INFORMASI K3',
+          headerRight: () => (
+            <View style={{ marginRight: 4 }}>
+              <Icon name="info" size={24} color="#ffffff" />
+            </View>
+          ),
         }}
       />
-       
+
+      <Stack.Screen
+        name="InformationDetail"
+        component={InformationDetailScreen}
+        options={{
+          presentation: 'modal',
+          title: 'Detail Informasi',
+          headerStyle: {
+            backgroundColor: '#06b6d4',
+          },
+        }}
+      />
+
+      {/* Briefing */}
+      <Stack.Screen
+        name="Briefing"
+        component={BriefingScreen}
+        options={{
+          title: 'BRIEFING K3',
+          headerRight: () => (
+            <View style={{ marginRight: 4 }}>
+              <Icon name="campaign" size={24} color="#ffffff" />
+            </View>
+          ),
+        }}
+      />
     </Stack.Navigator>
   );
 }
